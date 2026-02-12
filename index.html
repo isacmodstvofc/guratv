@@ -27,9 +27,6 @@ box-shadow:0 0 25px rgba(0,0,0,0.6);
 }
 h1{text-align:center;margin-bottom:10px;font-size:22px;}
 .online{text-align:center;font-size:14px;margin-bottom:5px;color:#bbb;}
-.global-online{text-align:center;font-size:13px;margin-bottom:15px;color:#00ff88;}
-.creator{margin-top:20px;font-size:12px;color:#888;text-align:center;}
-.creator a{color:#e50914;text-decoration:none;}
 input{
 width:100%;padding:14px;border:none;border-radius:10px;
 background:#2a2a2a;color:white;font-size:14px;margin-bottom:12px;
@@ -58,11 +55,6 @@ max-height:280px;display:flex;flex-direction:column;margin-bottom:15px;
 background:#222;padding:8px 12px;border-radius:8px;
 margin-bottom:8px;font-size:13px;word-break:break-word;
 }
-.msg strong{color:#e50914;}
-.btn-sair{
-width:100%;padding:12px;background:#444;color:white;
-border:none;border-radius:10px;font-size:14px;cursor:pointer;
-}
 .login,.home{
 width:95%;max-width:500px;margin:100px auto;
 background:#181818;padding:30px;border-radius:16px;text-align:center;
@@ -74,7 +66,6 @@ background:#181818;padding:30px;border-radius:16px;text-align:center;
 <div class="home" id="homeBox">
 <h2>🎬 Assistir Junto Privado PRO</h2>
 <button class="btn" id="btnAbrirLogin">Entrar na Sala</button>
-<div class="global-online" id="totalOnlineGlobal">Usuários no site: 0</div>
 </div>
 
 <div class="login hidden" id="loginBox">
@@ -105,23 +96,24 @@ background:#181818;padding:30px;border-radius:16px;text-align:center;
 <button class="btn" id="btnEnviarMsg">Enviar</button>
 </div>
 
-<button class="btn-sair" onclick="location.reload()">Sair da Sala</button>
+<button class="btn btn-secondary" onclick="location.reload()">Sair</button>
 </div>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-apiKey:"SUA_KEY",
-authDomain:"SEU_AUTH",
-projectId:"SEU_PROJECT"
+apiKey:"AIzaSyBFX1DJmROOkPXYgras6Z1kFOWj2y33agY",
+authDomain:"salaprivada-a0df7.firebaseapp.com",
+projectId:"salaprivada-a0df7"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* PEGANDO ELEMENTOS CORRETAMENTE */
+/* ELEMENTOS */
 const homeBox = document.getElementById("homeBox");
 const loginBox = document.getElementById("loginBox");
 const salaBox = document.getElementById("salaBox");
@@ -142,7 +134,7 @@ const videoArea = document.getElementById("videoArea");
 let salaRef = null;
 let nomeLocal = "";
 
-/* BOTÕES */
+/* ABRIR LOGIN */
 btnAbrirLogin.onclick = ()=>{
 homeBox.classList.add("hidden");
 loginBox.classList.remove("hidden");
@@ -153,6 +145,7 @@ loginBox.classList.add("hidden");
 homeBox.classList.remove("hidden");
 };
 
+/* ENTRAR */
 btnEntrar.onclick = async ()=>{
 let senha = senhaSala.value.trim();
 let nome = nomeUsuario.value.trim();
@@ -177,12 +170,14 @@ salaBox.classList.remove("hidden");
 
 onSnapshot(salaRef,(docSnap)=>{
 let dados = docSnap.data();
+if(!dados) return;
 if(dados.video) carregarVideo(dados.video);
 mostrarChat(dados.chat||[]);
 onlineInfo.innerText="Online na sala: "+(dados.online?dados.online.length:0);
 });
 };
 
+/* CHAT */
 btnEnviarMsg.onclick = async ()=>{
 let texto = chatInput.value.trim();
 if(!texto) return;
@@ -203,6 +198,7 @@ chatBox.appendChild(div);
 chatBox.scrollTop=chatBox.scrollHeight;
 }
 
+/* VIDEO LINK */
 btnEnviarVideo.onclick = async ()=>{
 let link = linkInput.value.trim();
 if(!link) return;
@@ -210,6 +206,7 @@ await updateDoc(salaRef,{video:link});
 linkInput.value="";
 };
 
+/* VIDEO GALERIA */
 videoFile.onchange = async (e)=>{
 const file=e.target.files[0];
 if(!file) return;
@@ -246,6 +243,7 @@ video.autoplay=true;
 videoArea.appendChild(video);
 }
 }
+
 </script>
 </body>
 </html>
